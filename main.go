@@ -113,7 +113,12 @@ func deploy(env Environment) error {
 
 	log.Printf("[%s] New commit detected. Building...\n", env.Branch)
 	binaryPath := filepath.Join(env.Dir, "notify-hub")
-	cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
+
+	//cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
+
+	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd")
+	cmd.Dir = env.Dir
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("build failed: %v - %s", err, string(output))
