@@ -83,9 +83,11 @@ func loadConfig(filename string) (*Config, error) {
 }
 
 func deploy(env Environment) error {
+	justCloned := false
 	log.Printf("[%s] Checking for updates...\n", env.Branch)
 
 	if _, err := os.Stat(filepath.Join(env.Dir, ".git")); os.IsNotExist(err) {
+		justCloned = true
 		log.Printf("[%s] Directory not found. Cloning...\n", env.Branch)
 		if err := gitClone(env); err != nil {
 			return fmt.Errorf("git clone failed: %w", err)
@@ -106,19 +108,14 @@ func deploy(env Environment) error {
 		return fmt.Errorf("could not get new commit hash: %w", err)
 	}
 
-	if lastCommit == newCommit {
+	if lastCommit == newCommit && !justCloned {
 		log.Printf("[%s] No new changes.\n", env.Branch)
 		return nil
 	}
 
 	log.Printf("[%s] New commit detected. Building...\n", env.Branch)
 	binaryPath := filepath.Join(env.Dir, "notify-hub")
-
-	//cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
-
-	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd")
-	cmd.Dir = env.Dir
-
+	cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("build failed: %v - %s", err, string(output))
