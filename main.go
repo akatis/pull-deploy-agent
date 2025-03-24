@@ -85,6 +85,13 @@ func loadConfig(filename string) (*Config, error) {
 func deploy(env Environment) error {
 	log.Printf("[%s] Checking for updates...\n", env.Branch)
 
+	if _, err := os.Stat(filepath.Join(env.Dir, ".git")); os.IsNotExist(err) {
+		log.Printf("[%s] Directory not found. Cloning...\n", env.Branch)
+		if err := gitClone(env); err != nil {
+			return fmt.Errorf("git clone failed: %w", err)
+		}
+	}
+
 	lastCommit, err := gitCommitHash(env.Dir)
 	if err != nil {
 		return fmt.Errorf("could not get last commit hash: %w", err)
@@ -158,6 +165,28 @@ func gitPull(dir, branch string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("git pull error: %s", string(output))
+	}
+	return nil
+}
+
+func gitClone(env Environment) error {
+	var remoteURL string
+	if config.Git.UseAuth {
+		remoteURL = fmt.Sprintf("https://%s:%s@github.com/%s/%s.git",
+			config.Git.Username,
+			config.Git.Token,
+			config.Git.RepoOwner,
+			config.Git.RepoName)
+	} else {
+		remoteURL = fmt.Sprintf("https://github.com/%s/%s.git",
+			config.Git.RepoOwner,
+			config.Git.RepoName)
+	}
+
+	cmd := exec.Command("git", "clone", "--branch", env.Branch, remoteURL, env.Dir)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("git clone error: %s", string(output))
 	}
 	return nil
 }
