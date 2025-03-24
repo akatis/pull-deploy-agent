@@ -1,0 +1,32 @@
+{
+  "interval_seconds": 120,
+  "log_file": "/home/ubuntu/pull-deploy.log",
+  "git_config": {
+    "username": "your_github_username",
+    "token": "your_personal_access_token",
+    "repo_owner": "your_github_org_or_user",
+    "repo_name": "your-repo-name",
+    "use_auth": true
+  },
+  "slack": {
+    "enabled": true,
+    "webhook_url": "https://hooks.slack.com/services/XXX/YYY/ZZZ"
+  },
+  "environments": [
+    {
+      "branch": "dev",
+      "dir": "/home/ubuntu/your-project-dev",
+      "service_name": "your-project-dev"
+    },
+    {
+      "branch": "stage",
+      "dir": "/home/ubuntu/your-project-stage",
+      "service_name": "your-project-stage"
+    },
+    {
+      "branch": "main",
+      "dir": "/home/ubuntu/your-project-prod",
+      "service_name": "your-project-prod"
+    }
+  ]
+}
