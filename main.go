@@ -43,6 +43,25 @@ type Config struct {
 var config *Config
 
 func main() {
+
+	fmt.Println(` ________  ___  ___  ___       ___                                
+|\   __  \|\  \|\  \|\  \     |\  \                               
+\ \  \|\  \ \  \\\  \ \  \    \ \  \                              
+ \ \   ____\ \  \\\  \ \  \    \ \  \                             
+  \ \  \___|\ \  \\\  \ \  \____\ \  \____                        
+   \ \__\    \ \_______\ \_______\ \_______\                      
+    \|__|     \|_______|\|_______|\|_______|                      
+                                                                  
+                                                                  
+                                                                  
+ ________  _______   ________  ___       ________      ___    ___ 
+|\   ___ \|\  ___ \ |\   __  \|\  \     |\   __  \    |\  \  /  /|
+\ \  \_|\ \ \   __/|\ \  \|\  \ \  \    \ \  \|\  \   \ \  \/  / /
+ \ \  \ \\ \ \  \_|/_\ \   ____\ \  \    \ \  \\\  \   \ \    / / 
+  \ \  \_\\ \ \  \_|\ \ \  \___|\ \  \____\ \  \\\  \   \/  /  /  
+   \ \_______\ \_______\ \__\    \ \_______\ \_______\__/  / /    
+    \|_______|\|_______|\|__|     \|_______|\|_______|\___/ /     
+                                                     \|___|/      `)
 	var err error
 	config, err = loadConfig("config.json")
 	if err != nil {
@@ -114,7 +133,7 @@ func deploy(env Environment) error {
 	}
 
 	log.Printf("[%s] New commit detected. Building...\n", env.Branch)
-	binaryPath := filepath.Join(env.Dir, "notify-hub")
+	binaryPath := filepath.Join(env.Dir, config.Git.RepoName)
 
 	//cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
 	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd")
