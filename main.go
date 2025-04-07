@@ -135,9 +135,13 @@ func deploy(env Environment) error {
 	log.Printf("[%s] New commit detected. Building...\n", env.Branch)
 	binaryPath := filepath.Join(env.Dir, config.Git.RepoName)
 
-	//cmd := exec.Command("go", "build", "-o", binaryPath, filepath.Join(env.Dir, "cmd"))
 	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd")
 	cmd.Dir = env.Dir
+
+	cmd.Env = append(os.Environ(),
+		"GOPATH=/tmp/go",
+		"GOMODCACHE=/tmp/go/pkg/mod",
+	)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
